@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <root version="3.3" release="1.0">
 	<properties>
-		<name>5e - Minions</name>
-		<version>0.1</version>
+		<name>Flee, Mortals! (Preview)</name>
+		<version>1.0</version>
 		<author>George Taray and Shane Parker</author>
-		<description>Adds support for Minion from MCDM's book Flee Mortals</description>
+		<description>Adds support for MCDM's book Flee, Mortals! (Preview)</description>
 	</properties>
 	<base>
 		<script name="MinionManager" file="scripts/manager_minions.lua" />
