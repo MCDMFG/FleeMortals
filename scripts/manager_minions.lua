@@ -1,5 +1,4 @@
 function onInit()
-    Debug.chat('minion manager load');
 end
 
 function isMinion(v)

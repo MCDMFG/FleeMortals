@@ -10,16 +10,21 @@ function onInit()
     ActionDamage.applyDamage = applyDamage;
 end
 
-function applyDamage(rSource, rTarget, bSecret, sDamage, nTotal)
+function applyDamage(rSource, rTarget, rRoll, sDamage, nTotal)
     if MinionManager.isMinion(rTarget) then
-        applyDamageMinion(rSource, rTarget, bSecret, sDamage, nTotal)
+        applyDamageMinion(rSource, rTarget, rRoll)
     else
-        applyDamageOriginal(rSource, rTarget, bSecret, sDamage, nTotal)
+        applyDamageOriginal(rSource, rTarget, rRoll, sDamage, nTotal)
     end
 end
 
-function applyDamageMinion(rSource, rTarget, bSecret, sDamage, nTotal)
+function applyDamageMinion(rSource, rTarget, rRoll)
     local nTotalHP, nTempHP, nWounds, nDeathSaveSuccess, nDeathSaveFail, nOverkill, nTotalDmg;
+	local bSecret
+
+	bSecret = rRoll.bSecret;
+	sDamage = rRoll.sDesc;
+	nTotal = rRoll.nTotal;
 
     local sTargetNodeType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
 	if not nodeTarget then
@@ -265,7 +270,13 @@ function applyDamageMinion(rSource, rTarget, bSecret, sDamage, nTotal)
 	end
 	
 	-- Output results
-	ActionDamage.messageDamage(rSource, rTarget, bSecret, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(rDamageOutput.tNotifications, " "));
+	if not rRoll.sType then
+		rRoll.sType = rDamageOutput.sType;
+	end
+	rRoll.sDamageText = rDamageOutput.sTypeOutput;
+	rRoll.nTotal = rDamageOutput.nVal;
+	rRoll.sResults = table.concat(rDamageOutput.tNotifications, " ");
+	ActionDamage.messageDamage(rSource, rTarget, rRoll);
 
 	-- Remove target after applying damage
 	if bRemoveTarget and rSource and rTarget then
