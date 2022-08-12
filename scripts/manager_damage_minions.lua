@@ -10,21 +10,28 @@ function onInit()
     ActionDamage.applyDamage = applyDamage;
 end
 
-function applyDamage(rSource, rTarget, rRoll, sDamage, nTotal)
+function applyDamage(rSource, rTarget, vRollOrSecret, sDamage, nTotal)
     if MinionManager.isMinion(rTarget) then
-        applyDamageMinion(rSource, rTarget, rRoll)
+        applyDamageMinion(rSource, rTarget, vRollOrSecret, sDamage, nTotal)
     else
-        applyDamageOriginal(rSource, rTarget, rRoll, sDamage, nTotal)
+        applyDamageOriginal(rSource, rTarget, vRollOrSecret, sDamage, nTotal)
     end
 end
 
-function applyDamageMinion(rSource, rTarget, rRoll)
-    local nTotalHP, nTempHP, nWounds, nDeathSaveSuccess, nDeathSaveFail, nOverkill, nTotalDmg;
-	local bSecret
+function applyDamageMinion(rSource, rTarget, vRollOrSecret, sDamage, nTotal)
+	local bSecret, rRoll
 
-	bSecret = rRoll.bSecret;
-	sDamage = rRoll.sDesc;
-	nTotal = rRoll.nTotal;
+	if type(vRollOrSecret) == "table" then
+		rRoll = vRollOrSecret;
+
+		bSecret = rRoll.bSecret;
+		sDamage = rRoll.sDesc;
+		nTotal = rRoll.nTotal;
+	else
+		bSecret = vRollOrSecret;
+	end
+
+	local nTotalHP, nTempHP, nWounds, nDeathSaveSuccess, nDeathSaveFail;
 
     local sTargetNodeType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
 	if not nodeTarget then
@@ -270,13 +277,17 @@ function applyDamageMinion(rSource, rTarget, rRoll)
 	end
 	
 	-- Output results
-	if not rRoll.sType then
-		rRoll.sType = rDamageOutput.sType;
+	if rRoll then
+		if not rRoll.sType then
+			rRoll.sType = rDamageOutput.sType;
+		end
+		rRoll.sDamageText = rDamageOutput.sTypeOutput;
+		rRoll.nTotal = rDamageOutput.nVal;
+		rRoll.sResults = table.concat(rDamageOutput.tNotifications, " ");
+		ActionDamage.messageDamage(rSource, rTarget, rRoll);
+	else
+		ActionDamage.messageDamage(rSource, rTarget, bSecret, rDamageOutput.sTypeOutput, sDamage, rDamageOutput.sVal, table.concat(rDamageOutput.tNotifications, " "));
 	end
-	rRoll.sDamageText = rDamageOutput.sTypeOutput;
-	rRoll.nTotal = rDamageOutput.nVal;
-	rRoll.sResults = table.concat(rDamageOutput.tNotifications, " ");
-	ActionDamage.messageDamage(rSource, rTarget, rRoll);
 
 	-- Remove target after applying damage
 	if bRemoveTarget and rSource and rTarget then
