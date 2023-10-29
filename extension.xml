@@ -8,6 +8,7 @@
 	</properties>
 	<base>
 		<script name="ActionDamageMinions" file="scripts/manager_damage_minions.lua" />
+		<script name="ActorManagerFM" file="scripts/manager_actor_fm.lua" />
 		<script name="CombatManagerFM" file="scripts/manager_combat_fm.lua" />
 		<script name="MinionManager" file="scripts/manager_minions.lua" />
 		
